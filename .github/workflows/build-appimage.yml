@@ -1,0 +1,81 @@
+name: Build MCPELauncher & UI & AppImage
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential cmake ninja-build qtbase5-dev qtdeclarative5-dev \
+            libssl-dev libpulse-dev libxi-dev libgl1-mesa-dev libgles2-mesa-dev \
+            libcurl4-openssl-dev libsqlite3-dev qttools5-dev qttools5-dev-tools \
+            zlib1g-dev pkg-config patchelf desktop-file-utils wget fuse libfuse2
+
+      - name: Checkout main repo (mcpelauncher-manifest)
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Checkout mcpelauncher-ui-manifest
+        uses: actions/checkout@v4
+        with:
+          repository: torporsche/mcpelauncher-ui-manifest
+          path: mcpelauncher-ui-manifest
+
+      - name: Build mcpelauncher
+        run: |
+          mkdir build-main
+          cd build-main
+          cmake .. -GNinja -DCMAKE_BUILD_TYPE=Release
+          ninja
+
+      - name: Build mcpelauncher-ui
+        run: |
+          mkdir build-ui
+          cd build-ui
+          cmake ../mcpelauncher-ui-manifest -GNinja -DCMAKE_BUILD_TYPE=Release
+          ninja
+
+      - name: List built files
+        run: |
+          find build-main -type f -executable -ls
+          find build-ui -type f -executable -ls
+
+      - name: Build AppImage (with both components)
+        run: |
+          cd build-main
+          wget -O linuxdeploy-x86_64.AppImage https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
+          chmod +x linuxdeploy-x86_64.AppImage
+
+          # Prepare the AppDir structure
+          mkdir -p AppDir/usr/bin
+
+          # Copy both launchers into AppDir
+          cp ./mcpelauncher AppDir/usr/bin/
+          cp ../build-ui/mcpelauncher-ui AppDir/usr/bin/
+
+          # Optionally copy .desktop and icon files (adjust as needed)
+          cp ../resources/mcpelauncher.desktop AppDir/
+          cp ../resources/mcpelauncher.png AppDir/
+
+          # Build the AppImage
+          ./linuxdeploy-x86_64.AppImage --appdir AppDir \
+            --output appimage \
+            --desktop-file AppDir/mcpelauncher.desktop \
+            --icon-file AppDir/mcpelauncher.png
+
+      - name: Upload AppImage as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mcpelauncher-with-ui-appimage
+          path: build-main/*.AppImage
