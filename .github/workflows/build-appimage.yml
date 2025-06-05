@@ -3,9 +3,9 @@ name: Build MCPELauncher & UI & AppImage
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
+    branches: [ ng ]
   pull_request:
-    branches: [ main ]
+    branches: [ ng ]
 
 jobs:
   build:
@@ -32,6 +32,11 @@ jobs:
         with:
           repository: torporsche/mcpelauncher-ui-manifest
           path: mcpelauncher-ui-manifest
+          submodules: recursive
+          
+      - name: Patch __has_feature usage in cdefs.h
+        run: |
+          sed -i 's/^# *if __has_feature/#if defined(__has_feature) \&\& __has_feature/' ../mcpelauncher-linker/bionic/libc/include/sys/cdefs.h
 
       - name: Build mcpelauncher
         run: |
