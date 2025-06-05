@@ -1,20 +1,4 @@
 name: branch sync
-permissions:
-  contents: write
-  actions: write
-  packages: write
-  deployments: write
-  pages: write
-  id-token: write
-  pull-requests: write
-  statuses: write
-  attestations: write
-  checks: write
-  discussions: write
-  issues: write
-  repository-projects: write
-  security-events: write
-  models: read
 on:
   workflow_dispatch:
     inputs:
@@ -69,7 +53,7 @@ jobs:
   linux-AppImage-sdl3:
     if: needs.prepare.outputs.sync == 'true'
     needs: prepare
-    uses: minecraft-linux/appimage-builder/.github/workflows/main.yml@main
+    uses: torporsche/appimage-builder/.github/workflows/main.yml@main
     with:
       mcpelauncher-ref: ${{ needs.prepare.outputs.mcpelauncher-ng }}
       mcpelauncher-qt6-ref: ${{ needs.prepare.outputs.mcpelauncher-qt6 }}
@@ -137,13 +121,9 @@ jobs:
     env:
       LAUNCHER_RELEASE_DESCRIPTION: |
         This release appends assets every day, the one with the highest number is the latest one.
-
         Please use releases from [minecraft-linux.github.io](https://minecraft-linux.github.io/)
-
         Builds from this tag are very very unstable, but new changes lands here earlier.
-
         **The macOS binaries provided here don't support the builtin updater, you risk falling behind updates while using a nightly**
-
         AppImages are deprecated due to organized piracy
     steps:
     - uses: actions/checkout@v3
