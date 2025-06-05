@@ -1,6 +1,20 @@
 name: branch sync
 permissions:
+  contents: write
+  actions: write
+  packages: write
+  deployments: write
+  pages: write
   id-token: write
+  pull-requests: write
+  statuses: write
+  attestations: write
+  checks: write
+  discussions: write
+  issues: write
+  repository-projects: write
+  security-events: write
+  models: read
 on:
   workflow_dispatch:
     inputs:
