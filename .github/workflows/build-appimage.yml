@@ -19,7 +19,8 @@ jobs:
             build-essential cmake ninja-build qtbase5-dev qtdeclarative5-dev \
             libssl-dev libpulse-dev libxi-dev libgl1-mesa-dev libgles2-mesa-dev \
             libcurl4-openssl-dev libsqlite3-dev qttools5-dev qttools5-dev-tools \
-            zlib1g-dev pkg-config patchelf desktop-file-utils wget fuse libfuse2 libpng-dev
+            zlib1g-dev pkg-config patchelf desktop-file-utils wget fuse libfuse2 libpng-dev \
+            qtbase5-dev qtwebengine5-dev libudev-dev libevdev-dev
 
       - name: Checkout main repo (mcpelauncher-manifest)
         uses: actions/checkout@v4
