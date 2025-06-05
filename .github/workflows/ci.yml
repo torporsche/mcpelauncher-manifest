@@ -1,8 +1,8 @@
 name: ci
 on:
+  workflow_dispatch:
   push:
-    branches:
-    - ng
+    branches: [ ng ]
   pull_request:
 jobs:
  linux:
