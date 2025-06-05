@@ -1,4 +1,7 @@
 name: branch sync
+permissions:
+  id-token: write
+  contents: write  # (often needed for publishing releases)
 on:
   workflow_dispatch:
     inputs:
